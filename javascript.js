@@ -19,3 +19,15 @@ function createGrid(size) {
 }
 
 createGrid(16);
+
+const grid = document.querySelectorAll('.column');
+
+grid.forEach(function(div) {
+    div.addEventListener('mouseenter', function () {
+      this.style.backgroundColor = 'pink';
+    });
+
+    div.addEventListener('mouseleave', function () {
+      this.style.backgroundColor = '';
+    });
+});
