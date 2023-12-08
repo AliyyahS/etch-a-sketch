@@ -50,7 +50,7 @@ button:focus {
     gap: 96px;
 }
 
-.settings {
+.controls {
     display: flex;
     flex-direction: column;
     padding: 8px 24px;
@@ -58,10 +58,21 @@ button:focus {
 }
 
 .grid {
-    width: 600px;
     height: 600px;
+    aspect-ratio: 1/1;
     padding: 0;
     background-color: white;
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.column {
+    flex-basis: 100%;
+    border: 1px solid black;
 }
 
 .container {
