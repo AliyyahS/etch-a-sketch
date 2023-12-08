@@ -72,7 +72,7 @@ button:focus {
 
 .column {
     flex-basis: 100%;
-    border: 1px solid black;
+    border: 0.5px solid lightgray;
 }
 
 .container {
