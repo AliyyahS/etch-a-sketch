@@ -2,6 +2,8 @@ const gridContainer = document.querySelector('.grid');
 const slider = document.querySelector('#sizeSlider');
 const displaySize = document.querySelector('#displaySize');
 
+// Functions
+
 function createGrid(size) {
     const totalHeight = gridContainer.offsetHeight;
     const height = totalHeight/size + 'px';
@@ -18,27 +20,39 @@ function createGrid(size) {
             row.appendChild(column);    
         }
     }
+    draw("black");
 }
 
-function hoverEffect(colour) {
+function draw(colour) {
     const grid = document.querySelectorAll('.column');
+    let isDrawing = false;
+
+    function addColour() {
+        if(isDrawing) {
+            this.classList.add('drawn');
+        }
+        this.style.backgroundColor = colour;
+    }
+
+    function removeColour() {
+        if(!isDrawing && !this.classList.contains('drawn')) {
+            this.style.backgroundColor = '';
+        }
+    }
 
     grid.forEach(function(div) {
-        div.addEventListener('mouseenter', function () {
-        this.style.backgroundColor = colour;
-        });
-
-        div.addEventListener('mouseleave', function () {
-        this.style.backgroundColor = '';
-        });
+        div.addEventListener('mouseenter', addColour);
+        div.addEventListener('mouseleave', removeColour);
+        div.addEventListener('click', function() {
+            isDrawing = !isDrawing;
+        })
     });
 }
 
-function updateGrid(newSize) {
+function updateGrid(size) {
     const grid = gridContainer.querySelectorAll('div');
     grid.forEach(div => div.remove());
-    createGrid(newSize);
-    hoverEffect('pink');
+    createGrid(size);
 }
 
 // Event listeners
@@ -52,5 +66,4 @@ slider.addEventListener('input', function() {
 
 document.addEventListener('DOMContentLoaded', () => {
     createGrid(16);
-    hoverEffect('pink');
 });
