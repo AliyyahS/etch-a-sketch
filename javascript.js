@@ -1,6 +1,8 @@
 const gridContainer = document.querySelector('.grid');
 const slider = document.querySelector('#sizeSlider');
 const displaySize = document.querySelector('#displaySize');
+const clearBtn = document.querySelector('#clearBtn');
+const eraserBtn = document.querySelector('#eraserBtn');
 
 // Functions
 
@@ -44,7 +46,14 @@ function draw(colour) {
         div.addEventListener('mouseenter', addColour);
         div.addEventListener('mouseleave', removeColour);
         div.addEventListener('click', function() {
-            isDrawing = !isDrawing;
+            if(!isErasing) {
+                this.classList.add('drawn');
+                isDrawing = !isDrawing;
+            } else {
+                isDrawing = false;
+                this.classList.remove('drawn');
+                this.style.backgroundColor = '';   
+            }
         })
     });
 }
@@ -61,6 +70,11 @@ slider.addEventListener('input', function() {
     displaySize.textContent = `${slider.value} x ${slider.value}`;
     updateGrid(slider.value);
 });
+
+let isErasing = false;
+eraserBtn.addEventListener('click', () => isErasing = !isErasing);
+
+clearBtn.addEventListener('click', () => updateGrid(slider.value));
 
 // On load
 
