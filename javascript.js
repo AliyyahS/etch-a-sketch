@@ -3,6 +3,12 @@ const slider = document.querySelector('#sizeSlider');
 const displaySize = document.querySelector('#displaySize');
 const clearBtn = document.querySelector('#clearBtn');
 const eraserBtn = document.querySelector('#eraserBtn');
+const colourPicker = document.querySelector('#colourPicker')
+
+// Initial states
+
+let isErasing = false;
+
 
 // Functions
 
@@ -22,39 +28,49 @@ function createGrid(size) {
             row.appendChild(column);    
         }
     }
-    draw("black");
 }
 
 function draw(colour) {
     const grid = document.querySelectorAll('.column');
     let isDrawing = false;
+    let startDrawing = false;
+    let startErasing = false;
 
-    function addColour() {
-        if(isDrawing) {
-            this.classList.add('drawn');
+    function clickHandler() {
+        if(!isErasing) {
+            isDrawing = true;
+            this.style.backgroundColor = colour;
+        } else {
+            isDrawing = false;
+            this.style.backgroundColor = '';
         }
-        this.style.backgroundColor = colour;
     }
 
-    function removeColour() {
-        if(!isDrawing && !this.classList.contains('drawn')) {
+    function mouseDownHandler() {
+        if(!isErasing) {
+            startDrawing = true
+        } else startErasing = true
+    }
+
+    function mouseEnterHandler() {
+        if(startDrawing) {
+            this.style.backgroundColor = colour;
+        }
+
+        if(startErasing) {
             this.style.backgroundColor = '';
         }
     }
 
     grid.forEach(function(div) {
-        div.addEventListener('mouseenter', addColour);
-        div.addEventListener('mouseleave', removeColour);
-        div.addEventListener('click', function() {
-            if(!isErasing) {
-                this.classList.add('drawn');
-                isDrawing = !isDrawing;
-            } else {
-                isDrawing = false;
-                this.classList.remove('drawn');
-                this.style.backgroundColor = '';   
-            }
-        })
+        div.addEventListener('click', clickHandler);
+        div.addEventListener('mousedown', mouseDownHandler);
+        div.addEventListener('mouseenter', mouseEnterHandler);
+        div.addEventListener('mouseup', function() {
+            isDrawing = false;
+            startDrawing = false;
+            startErasing = false;
+        });
     });
 }
 
@@ -62,6 +78,20 @@ function updateGrid(size) {
     const grid = gridContainer.querySelectorAll('div');
     grid.forEach(div => div.remove());
     createGrid(size);
+    draw(colourPicker.value);
+}
+
+function onErase(status) {
+    isErasing = !isErasing;
+
+    if(isErasing) {
+        eraserBtn.classList.add('active');
+    } else eraserBtn.classList.remove('active');
+}
+
+function updateColour() {
+    let selectedColour = colourPicker.value;
+    draw(selectedColour);
 }
 
 // Event listeners
@@ -71,13 +101,13 @@ slider.addEventListener('input', function() {
     updateGrid(slider.value);
 });
 
-let isErasing = false;
-eraserBtn.addEventListener('click', () => isErasing = !isErasing);
-
+eraserBtn.addEventListener('click', onErase);
 clearBtn.addEventListener('click', () => updateGrid(slider.value));
+colourPicker.addEventListener('change', updateColour);
 
 // On load
 
 document.addEventListener('DOMContentLoaded', () => {
     createGrid(16);
+    draw('black');
 });
