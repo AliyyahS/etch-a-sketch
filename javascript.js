@@ -9,7 +9,6 @@ const colourPicker = document.querySelector('#colourPicker')
 
 let isErasing = false;
 
-
 // Functions
 
 function createGrid(size) {
@@ -82,16 +81,24 @@ function updateGrid(size) {
 }
 
 function onErase(status) {
-    isErasing = !isErasing;
-
-    if(isErasing) {
-        eraserBtn.classList.add('active');
-    } else eraserBtn.classList.remove('active');
+    if(status === "deactivate") {
+        isErasing = false;
+        eraserBtn.classList.remove('active');
+    } else {
+        if(isErasing) {
+            eraserBtn.classList.add('active');
+        } else eraserBtn.classList.remove('active');
+    }
 }
 
 function updateColour() {
     let selectedColour = colourPicker.value;
     draw(selectedColour);
+}
+
+function clearGrid() {
+    updateGrid(slider.value);
+    onErase("deactivate");
 }
 
 // Event listeners
@@ -101,8 +108,11 @@ slider.addEventListener('input', function() {
     updateGrid(slider.value);
 });
 
-eraserBtn.addEventListener('click', onErase);
-clearBtn.addEventListener('click', () => updateGrid(slider.value));
+eraserBtn.addEventListener('click', function() {
+    isErasing = !isErasing;
+    onErase();
+});
+clearBtn.addEventListener('click', clearGrid);
 colourPicker.addEventListener('change', updateColour);
 
 // On load
