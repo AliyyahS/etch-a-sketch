@@ -4,10 +4,16 @@ const displaySize = document.querySelector('#displaySize');
 const clearBtn = document.querySelector('#clearBtn');
 const eraserBtn = document.querySelector('#eraserBtn');
 const colourPicker = document.querySelector('#colourPicker')
+const singleModeBtn = document.querySelector('#singleMode')
+const rainbowModeBtn = document.querySelector('#rainbowMode')
 
 // Initial states
 
 let isErasing = false;
+let singleMode = true;
+let rainbowMode = false;
+
+singleModeBtn.classList.add('active');
 
 // Functions
 
@@ -38,7 +44,11 @@ function draw(colour) {
     function clickHandler() {
         if(!isErasing) {
             isDrawing = true;
-            this.style.backgroundColor = colour;
+            if(singleMode) {
+                this.style.backgroundColor = colour;
+            } else if(rainbowMode) {
+                this.style.backgroundColor = updateColour();
+            }
         } else {
             isDrawing = false;
             this.style.backgroundColor = '';
@@ -53,7 +63,11 @@ function draw(colour) {
 
     function mouseEnterHandler() {
         if(startDrawing) {
-            this.style.backgroundColor = colour;
+            if(singleMode) {
+                this.style.backgroundColor = colour;
+            } else if(rainbowMode) {
+                this.style.backgroundColor = updateColour();
+            }
         }
 
         if(startErasing) {
@@ -77,7 +91,7 @@ function updateGrid(size) {
     const grid = gridContainer.querySelectorAll('div');
     grid.forEach(div => div.remove());
     createGrid(size);
-    draw(colourPicker.value);
+    draw(updateColour());
 }
 
 function onErase(status) {
@@ -91,9 +105,39 @@ function onErase(status) {
     }
 }
 
+function onSingleMode() {
+    onErase("deactivate");
+    if(!singleMode) {
+        rainbowMode = false;
+        singleMode = true;
+        singleModeBtn.classList.add('active');
+        rainbowModeBtn.classList.remove('active');
+    }
+    updateColour();
+}
+
+function onRainbowMode() {
+    onErase("deactivate");
+    if(!rainbowMode) {
+        singleMode = false;
+        rainbowMode = true;
+        rainbowModeBtn.classList.add('active');
+        singleModeBtn.classList.remove('active');
+    } else return;
+}
+
 function updateColour() {
-    let selectedColour = colourPicker.value;
-    draw(selectedColour);
+    let colour = colourPicker.value;
+
+    if(singleMode) {
+        draw(colour);
+    } else if(rainbowMode){
+        const R = Math.floor(Math.random() * 256);
+        const G = Math.floor(Math.random() * 256);
+        const B = Math.floor(Math.random() * 256);
+        colour = `rgb(${R}, ${G}, ${B})`;
+        return colour;
+    }
 }
 
 function clearGrid() {
@@ -112,8 +156,11 @@ eraserBtn.addEventListener('click', function() {
     isErasing = !isErasing;
     onErase();
 });
+
 clearBtn.addEventListener('click', clearGrid);
-colourPicker.addEventListener('change', updateColour);
+colourPicker.addEventListener('change', onSingleMode);
+singleModeBtn.addEventListener('click', onSingleMode);
+rainbowModeBtn.addEventListener('click', onRainbowMode);
 
 // On load
 
